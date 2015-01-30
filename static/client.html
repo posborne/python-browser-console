@@ -1,0 +1,78 @@
+<!-- index.html -->
+<html>
+  <head>
+    <title>Hello React</title>
+    <script src="http://fb.me/react-0.12.2.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+     var PythonConsole = React.createClass({
+       getInitialState: function() {
+         return {
+           history: [],
+           output: "",
+         }
+       },
+       submitInput: function(input) {
+         $.ajax({
+           url: '/api/console',
+           dataType: 'json',
+           type: 'POST',
+           data: {input: input},
+           success: function(data) {
+             console.log(data);
+             this.setState({
+               output: data.output,
+               history: data.history,
+             });
+           }.bind(this),
+           error: function(xhr, status, err) {
+             console.error("/api/console", status, err.toString());
+           }.bind(this)
+         });
+       },
+       render: function() {
+         return (
+           <div>
+             <PythonConsoleOutput output={this.state.output} />
+             <PythonConsoleInput submitInput={this.submitInput} />
+           </div>
+         );
+       }
+     });
+
+     var PythonConsoleOutput = React.createClass({
+       render: function() {
+         return (
+           <pre dangerouslySetInnerHTML={{__html: this.props.output}}></pre>
+         );
+       }
+     });
+
+     var PythonConsoleInput = React.createClass({
+       handleSubmit: function(e) {
+         e.preventDefault();
+         var input = this.refs.input.getDOMNode().value;
+         this.props.submitInput(input);
+         this.refs.input.getDOMNode().value = '';
+       },
+       render: function() {
+         return (
+           <form className="pythonConsoleInputForm" onSubmit={this.handleSubmit}>
+             <input type="text" placeholder="... python code ..." ref="input" />
+             <input type="submit" value="Post" />
+           </form>
+         );
+       }
+     });
+
+     React.render(
+       <PythonConsole />,
+       document.getElementById('content')
+     );
+    </script>
+  </body>
+</html>
