@@ -13,7 +13,7 @@
        getInitialState: function() {
          return {
            history: [],
-           output: "",
+           outputRecords: [],
          }
        },
        submitInput: function(input) {
@@ -25,7 +25,7 @@
            success: function(data) {
              console.log(data);
              this.setState({
-               output: data.output,
+               outputRecords: data.outputRecords,
                history: data.history,
              });
            }.bind(this),
@@ -37,7 +37,7 @@
        render: function() {
          return (
            <div>
-             <PythonConsoleOutput output={this.state.output} />
+             <PythonConsoleOutput outputRecords={this.state.outputRecords} />
              <PythonConsoleInput submitInput={this.submitInput} />
            </div>
          );
@@ -46,8 +46,23 @@
 
      var PythonConsoleOutput = React.createClass({
        render: function() {
+         var output = [];
+         for (var i = 0; i < this.props.outputRecords.length; i++) {
+           var record = this.props.outputRecords[i];
+           console.log(record.line);
+           if (record.type == "input") {
+             output.push(<span>&gt;&gt;&gt; {record.line}</span>);
+           } else if (record.type == "output") {
+             output.push(<div>{record.line}</div>);
+           }
+         }
+
+         var codeStyle = {
+           "font-family": "Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace"
+         };
+
          return (
-           <pre dangerouslySetInnerHTML={{__html: this.props.output}}></pre>
+           <div style={codeStyle}>{output}</div>
          );
        }
      });
