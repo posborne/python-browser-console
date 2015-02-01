@@ -1,0 +1,10 @@
+{
+    "name": "python-browser-console",
+    "version": "0.1.0",
+    "dependencies": {
+        "react": "~0.12.1",
+        "jquery-browserify": "~1.8.1",
+        "underscore": "*",
+        "reactify": "~1.0.0"
+    }
+}

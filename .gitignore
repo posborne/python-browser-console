@@ -1,5 +1,11 @@
+# Node packages
+node_modules/
+
 # Bytecode Files
 *.py[co]
 
 # Virtualenv
 env/
+
+# Generated Files
+static/app.js
