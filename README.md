@@ -25,4 +25,6 @@ your web page.
 
 ## Preview
 
-Here's a screenshot of the end result (TODO).
+Here's a screenshot of the end result:
+
+[Screenshot](http://i.imgur.com/10WjB57.png)

@@ -1,5 +1,6 @@
 var $ = require('jquery-browserify');
 var React = require('react');
+var BSInput = require('react-bootstrap').Input;
 
 var PythonConsole = React.createClass({
   getInitialState: function() {
@@ -29,7 +30,9 @@ var PythonConsole = React.createClass({
   render: function() {
     return (
       <div>
-      <PythonConsoleOutput outputRecords={this.state.outputRecords} />
+      <PythonConsoleOutput
+        outputHeight={this.props.outputHeight}
+        outputRecords={this.state.outputRecords} />
       <PythonConsoleInput submitInput={this.submitInput} />
       </div>
     );
@@ -37,13 +40,19 @@ var PythonConsole = React.createClass({
 });
 
 var PythonConsoleOutput = React.createClass({
+  componentDidUpdate: function() {
+    // on update, we need to tell the scrollbar to scroll to
+    // to bottom.
+    var node = this.getDOMNode();
+    node.scrollTop = node.scrollHeight;
+  },
   render: function() {
     var output = [];
     for (var i = 0; i < this.props.outputRecords.length; i++) {
       var record = this.props.outputRecords[i];
       console.log(record.line);
       if (record.type == "input") {
-        output.push(<span>&gt;&gt;&gt; {record.line}</span>);
+        output.push(<span style={{color: "blue", "font-weight": "bold"}}>&gt;&gt;&gt; {record.line}</span>);
       } else if (record.type == "output") {
         output.push(<div>{record.line}</div>);
       }
@@ -51,7 +60,10 @@ var PythonConsoleOutput = React.createClass({
 
     var codeStyle = {
       "white-space": "pre-wrap",
-      "font-family": "monospace"
+      "font-family": "monospace",
+      "height": this.props.outputHeight,
+      "overflow": "auto",
+      "top": 0,
     };
 
     return (
@@ -63,19 +75,27 @@ var PythonConsoleOutput = React.createClass({
 var PythonConsoleInput = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
-    var input = this.refs.input.getDOMNode().value;
-    this.props.submitInput(input);
-    this.refs.input.getDOMNode().value = '';
+    var inputDOMNode = this.refs.input.getInputDOMNode();
+    this.props.submitInput(inputDOMNode.value);
+    inputDOMNode.value = '';
   },
   render: function() {
     var inputBoxStyle = {
-      "font-family": "monospace",
-      
+      "font-family": "monospace"
     };
     return (
       <form className="pythonConsoleInputForm" onSubmit={this.handleSubmit}>
-      <input type="text" placeholder="... python code ..." ref="input" />
-      <input type="submit" value="Post" />
+        <div className="row">
+        <div className="col-md-8">
+          <BSInput
+             type="text"
+             addonBefore=">>>"
+             style={inputBoxStyle}
+             placeholder="... python code ..."
+             ref="input" />
+        </div>
+        <div className="col-md-2"><BSInput type="submit" value="Post" /></div>
+        </div>
       </form>
     );
   }
@@ -83,8 +103,9 @@ var PythonConsoleInput = React.createClass({
 
 /* Render the python console to the page */
 $(document).ready(function() {
+    console.log("Rendering!");
   React.render(
-    <PythonConsole />,
-    document.getElementById('content')
+    <PythonConsole outputHeight="80%" />,
+    document.getElementById('browser-console')
   );
 });
