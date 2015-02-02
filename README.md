@@ -27,4 +27,4 @@ your web page.
 
 Here's a screenshot of the end result:
 
-[Screenshot](http://i.imgur.com/10WjB57.png)
+![Screenshot](http://i.imgur.com/10WjB57.png)
